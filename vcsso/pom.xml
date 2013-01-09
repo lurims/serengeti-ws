@@ -1,0 +1,22 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.vmware.bdd</groupId>
+  <artifactId>vcsso</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  
+  <parent>
+		<groupId>com.vmware.bdd</groupId>
+		<artifactId>serengeti-master</artifactId>
+		<version>${serengeti.version}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.vmware.vlsi</groupId>
+			<artifactId>ssoClient</artifactId>
+			<version>5.1.0-738597</version>
+		</dependency>
+	</dependencies>
+</project>
