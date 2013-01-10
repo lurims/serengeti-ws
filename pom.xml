@@ -11,11 +11,11 @@
 	<modules>
 		<module>impala</module>
 		<module>common</module>
+                <module>vcsso</module>
 		<module>server/serengeti</module>
 		<module>cli</module>
 		<module>frontend</module>
 		<module>vcext</module>
-		<module>vcsso</module>
 	</modules>
 
 	<dependencyManagement>
@@ -25,6 +25,12 @@
 				<artifactId>common</artifactId>
 				<version>${serengeti.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.vmware.bdd</groupId>
+				<artifactId>vcsso</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
 			<dependency>
 				<groupId>org.apache.hadoop</groupId>
 				<artifactId>hadoop-core</artifactId>
