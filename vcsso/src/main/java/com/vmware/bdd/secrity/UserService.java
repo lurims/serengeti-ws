@@ -34,6 +34,7 @@ public class UserService implements UserDetailsService {
 
    private static final Logger logger = Logger.getLogger(UserService.class);
    private static final String UsersFile = "Users.xml";
+   private static final String ADMIN_ROLE = "administrator";
 
    @Override
    public UserDetails loadUserByUsername(String username)
@@ -59,10 +60,10 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException(null);
          }
 
-         ArrayList<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
-         list.add(new SimpleGrantedAuthority(userDTO.getRole()));
+         ArrayList<GrantedAuthority> roleList = new ArrayList<GrantedAuthority>();
+         roleList.add(new SimpleGrantedAuthority(ADMIN_ROLE));
          return new org.springframework.security.core.userdetails.User(
-               userDTO.getName(), "", list);
+               userDTO.getName(), "", roleList);
       } catch (Exception e) {
          logger.error("Authorized error :" + e.getMessage());
          throw new UsernameNotFoundException("Unauthorized");

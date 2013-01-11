@@ -13,11 +13,11 @@
 	</parent>
 
 	<dependencies>
-		<!-- <dependency>
+		<dependency>
 			<groupId>com.vmware.vlsi</groupId>
 			<artifactId>ssoClient</artifactId>
 			<version>5.1.0-738597</version>
-		</dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>

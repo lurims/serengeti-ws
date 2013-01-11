@@ -21,8 +21,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class User {
 
    private String name;
-   private String domain;
-   private String role;
 
    @XmlAttribute
    public String getName() {
@@ -33,28 +31,8 @@ public class User {
       this.name = name;
    }
 
-   @XmlAttribute
-   public String getDomain() {
-      return domain;
-   }
-
-   public void setDomain(String domain) {
-      this.domain = domain;
-   }
-
-   @XmlAttribute
-   public String getRole() {
-      return role;
-   }
-
-   public void setRole(String role) {
-      this.role = role;
-   }
-
    @Override
    public String toString() {
-      return "userName:" + this.getName() + ",domain:" + this.getDomain()
-            + ",role:" + this.getRole();
+      return "userName:" + this.getName();
    }
-
 }
