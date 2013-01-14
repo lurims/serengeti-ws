@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package com.vmware.bdd.secrity;
+package com.vmware.bdd.security;
 
 import static org.testng.AssertJUnit.assertNotNull;
 
@@ -35,6 +35,9 @@ import com.vmware.vim.sso.client.SecurityTokenService;
 import com.vmware.vim.sso.client.SecurityTokenServiceConfig;
 import com.vmware.vim.sso.client.TokenSpec;
 import com.vmware.vim.sso.client.SecurityTokenServiceConfig.ConnectionConfig;
+
+import com.vmware.bdd.security.UserService;
+
 
 public class TestAccountService {
 

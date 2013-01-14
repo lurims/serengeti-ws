@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package com.vmware.bdd.secrity;
+package com.vmware.bdd.security;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,6 +31,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.vmware.vim.sso.client.DefaultSecurityTokenServiceFactory;
 import com.vmware.vim.sso.client.SecurityTokenService;
@@ -106,7 +107,9 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
          } catch (CertificateException stsCertException) {
             logger.error("Authentication error :" + stsCertException.getMessage());
             throw new AuthenticationServiceException(stsCertException.getMessage());
-         }  catch (Exception e) {
+         }  catch (UsernameNotFoundException userNotfoundException) {
+            throw userNotfoundException;
+         } catch (Exception e) {
             logger.error("Authentication error :" + e.getMessage());
             throw new BadCredentialsException(e.getMessage());
          } finally {

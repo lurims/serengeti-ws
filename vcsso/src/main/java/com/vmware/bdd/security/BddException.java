@@ -1,4 +1,4 @@
-package com.vmware.bdd.secrity;
+package com.vmware.bdd.security;
 
 /***************************************************************************
  * Copyright (c) 2012 VMware, Inc. All Rights Reserved.
