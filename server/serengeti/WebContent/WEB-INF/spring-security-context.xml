@@ -29,8 +29,7 @@
 	<beans:bean id="userService" class="com.vmware.bdd.security.UserService" />
 	<beans:bean id="userAuthenticationProvider"
 		class="com.vmware.bdd.security.UserAuthenticationProvider">
-		<beans:property name="userService">
-			<beans:bean class="com.vmware.bdd.security.UserService" />
+		<beans:property name="userService" ref="userService">
 		</beans:property>
 	</beans:bean>
 
