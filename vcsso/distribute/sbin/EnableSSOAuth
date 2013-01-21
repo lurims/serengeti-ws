@@ -42,7 +42,7 @@ do
     then
       sed -i "s|sts=.*|$line|" ${SERENGETI_PROP_FILE}
     else
-      echo $line >> ${SERENGETI_PROP_FILE}
+      echo -e "\n$line" >> ${SERENGETI_PROP_FILE}
     fi
   fi
 done < "ssoLocations.txt"
