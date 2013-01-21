@@ -57,7 +57,7 @@ public class UserService implements UserDetailsService {
             }
          }
          if (!exsiting) {
-            throw new UsernameNotFoundException(null);
+            throw new UsernameNotFoundException("User " + username + " is not authorized to access Serengeti.");
          }
 
          ArrayList<GrantedAuthority> roleList = new ArrayList<GrantedAuthority>();

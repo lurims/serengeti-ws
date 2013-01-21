@@ -42,7 +42,7 @@ import com.vmware.vim.sso.client.TokenSpec;
 public class UserAuthenticationProvider implements AuthenticationProvider {
    private static final Logger logger = Logger.getLogger(UserAuthenticationProvider.class);
    private static final String STS_PROP_KEY = "sts";
-   private static final String SSO_CRTS_DIR = "sso_crts_dir";
+   private static final String SSO_CRTS_DIR = "sts_crts_dir";
    private static final String X509 = "X.509";
    private static final int TOKEN_LIFE_TIME = 60;
    private UserService userService;
