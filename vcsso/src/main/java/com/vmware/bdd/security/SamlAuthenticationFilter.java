@@ -52,7 +52,7 @@ public class SamlAuthenticationFilter extends AbstractAuthenticationProcessingFi
    private static final Logger logger = Logger.getLogger(SamlAuthenticationFilter.class);
 
    protected SamlAuthenticationFilter() {
-      super("/saml/login");
+      super("/sp/sso");
    }
 
    @Override
