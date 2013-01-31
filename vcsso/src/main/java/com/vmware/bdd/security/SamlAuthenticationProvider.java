@@ -20,9 +20,11 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.security.KeyFactory;
 import java.security.PublicKey;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -46,9 +48,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.vmware.vim.sso.client.DefaultTokenFactory;
+import com.vmware.vim.sso.client.SamlToken;
+import com.vmware.vim.sso.client.SecurityTokenService;
+
 public class SamlAuthenticationProvider implements AuthenticationProvider {
    private static final Logger logger = Logger.getLogger(SamlAuthenticationProvider.class);
-
+   private static final String STS_PROP_KEY = "sts";
    private UserService userService;
 
    @Override
@@ -71,12 +77,71 @@ public class SamlAuthenticationProvider implements AuthenticationProvider {
 //    HOK signature check
       validateSignature(response, assertion);
 //      saml assertion verification by SSO
+      validateTokenFromSSO(response, assertion);
 
       UserDetails user =
             userService.loadUserByUsername(assertion.getSubject().getNameID().getValue());
       SamlAuthenticationToken samlAuthenticationToken =
             new SamlAuthenticationToken(response, user.getAuthorities());
       return samlAuthenticationToken;
+   }
+
+   private void validateTokenFromSSO(Response response, Assertion assertion) {
+      try {
+         X509Certificate[] certs = getCertsFromAssertion(assertion);
+         if (certs != null) {
+            String stsLocation = Configuration.getString(STS_PROP_KEY);
+            SecurityTokenService stsClient =
+                  SecurityUtils.getSTSClient(stsLocation);
+            SamlToken ssoSamlToken =
+                  DefaultTokenFactory.createTokenFromDom(assertion.getDOM(),
+                        certs);
+            boolean validFromSSO = stsClient.validateToken(ssoSamlToken);
+            if (!validFromSSO) {
+               throw new BadCredentialsException("invalid saml token.");
+            }
+         }
+      } catch (Exception e) {
+         logger.error("Cannot validate the token by sso: " + e.getMessage());
+         throw new BadCredentialsException(e.getMessage());
+      }
+   }
+
+   private X509Certificate[] getCertsFromAssertion(Assertion assertion)
+         throws CertificateException {
+      List<X509Certificate> certList = new ArrayList<X509Certificate>();
+      Signature ds = assertion.getSignature();
+      if (ds != null) {
+         List<X509Data> x509Data = ds.getKeyInfo().getX509Datas();
+         if (x509Data != null && !x509Data.isEmpty()) {
+            List<org.opensaml.xml.signature.X509Certificate> certs =
+                  x509Data.get(0).getX509Certificates();
+            if (certs != null) {
+               for (org.opensaml.xml.signature.X509Certificate cert : certs) {
+                  // Instantiate a java.security.cert.X509Certificate object out of the
+                  // base64 decoded byte[] of the certificate
+                  X509Certificate x509Cert = null;
+
+                  CertificateFactory cf =
+                        CertificateFactory.getInstance("X.509");
+                  x509Cert =
+                        (X509Certificate) cf
+                              .generateCertificate(new ByteArrayInputStream(
+                                    org.opensaml.xml.util.Base64.decode(cert
+                                          .getValue())));
+                  if (x509Cert != null) {
+                     certList.add(x509Cert);
+                  }
+               }
+            }
+         }
+         if (certList.size() > 0) {
+            X509Certificate[] certs =
+                  certList.toArray(new X509Certificate[certList.size()]);
+            return certs;
+         }
+      }
+      return null;
    }
 
    @Override
