@@ -238,15 +238,9 @@ public class SamlAuthenticationProvider implements AuthenticationProvider {
                            .generateCertificate(new ByteArrayInputStream(
                                  org.opensaml.xml.util.Base64.decode(cert
                                        .getValue())));
-               X509EncodedKeySpec publicKeySpec =
-                     new X509EncodedKeySpec(x509Certificate.getPublicKey()
-                           .getEncoded());
-               //get KeyFactory object that creates key objects, specifying RSA
-               KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-               PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
-               //generate public key to validate signatures
                BasicX509Credential publicCredential = new BasicX509Credential();
-               publicCredential.setPublicKey(publicKey);
+               publicCredential.setEntityCertificate(x509Certificate);
+
                SignatureValidator validator =
                      new SignatureValidator(publicCredential);
                validator.validate(responseSignature);
