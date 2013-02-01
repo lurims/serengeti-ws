@@ -70,6 +70,8 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
                   new UserAuthenticationToken(user.getAuthorities());
 
             return accountAuthenticationToken;
+         } catch (AuthenticationServiceException serviceException) {
+            throw serviceException;
          } catch (UsernameNotFoundException userNotfoundException) {
             throw userNotfoundException;
          } catch (Exception e) {

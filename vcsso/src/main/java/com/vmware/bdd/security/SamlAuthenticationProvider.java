@@ -38,6 +38,7 @@ import org.opensaml.xml.signature.Signature;
 import org.opensaml.xml.signature.SignatureValidator;
 import org.opensaml.xml.signature.X509Data;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -96,6 +97,10 @@ public class SamlAuthenticationProvider implements AuthenticationProvider {
                throw new BadCredentialsException("invalid saml token.");
             }
          }
+      } catch (AuthenticationServiceException serviceException) {
+         throw serviceException;
+      } catch (BadCredentialsException badCredentialException) {
+         throw badCredentialException;
       } catch (Exception e) {
          logger.error("Cannot validate the token by sso: " + e.getMessage());
          throw new BadCredentialsException(e.getMessage());

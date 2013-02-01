@@ -65,8 +65,6 @@ public class SecurityUtils {
       } catch (CertificateException stsCertException) {
          logger.error("Authentication error :" + stsCertException.getMessage());
          throw new AuthenticationServiceException(stsCertException.getMessage());
-      }  catch (UsernameNotFoundException userNotfoundException) {
-         throw userNotfoundException;
       } catch (Exception e) {
          logger.error("Authentication error :" + e.getMessage());
          throw new BadCredentialsException(e.getMessage());
