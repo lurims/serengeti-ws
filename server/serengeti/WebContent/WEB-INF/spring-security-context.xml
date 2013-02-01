@@ -12,7 +12,7 @@
 
    <http entry-point-ref="restAuthenticationEntryPoint">
       <intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
-      <custom-filter before="FIRST" ref="userAuthenticationFilter"/>
+      <custom-filter before="BASIC_AUTH_FILTER" ref="userAuthenticationFilter"/>
       <custom-filter after="BASIC_AUTH_FILTER" ref="samlAuthenticationFilter"/>
    </http>
 
