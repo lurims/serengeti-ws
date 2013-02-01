@@ -18,6 +18,8 @@
 
    <beans:bean id="noRedirectSuccessHandler" class="com.vmware.bdd.rest.NoRedirectSuccessHandler"/>
    <beans:bean id="noRedirectFailureHandler" class="com.vmware.bdd.rest.NoRedirectFailureHandler"/>
+   <beans:bean id="redirectSuccessHandler" class="com.vmware.bdd.security.RedirectSuccessHandler"/>
+   <beans:bean id="redirectFailureHandler" class="com.vmware.bdd.security.RedirectFailureHandler"/>
    <beans:bean id="restAuthenticationEntryPoint" class="com.vmware.bdd.rest.RestAuthenticationEntryPoint"/>
 
   <beans:bean id="userAuthenticationFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
@@ -28,8 +30,8 @@
 
   <beans:bean id="samlAuthenticationFilter" class="com.vmware.bdd.security.SamlAuthenticationFilter">
     <beans:property name="authenticationManager" ref="samlAuthenticationManager" />
-    <beans:property name="authenticationSuccessHandler" ref="noRedirectSuccessHandler"/>
-    <beans:property name="authenticationFailureHandler" ref="noRedirectFailureHandler"/>
+    <beans:property name="authenticationSuccessHandler" ref="redirectSuccessHandler"/>
+    <beans:property name="authenticationFailureHandler" ref="redirectFailureHandler"/>
   </beans:bean>
 
   <authentication-manager alias="authenticationManager">
