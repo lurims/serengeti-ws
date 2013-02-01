@@ -11,8 +11,9 @@ SERENGETI_HOME=/opt/serengeti
 SSO_TOOL_HOME=${SERENGETI_HOME}/ssotool
 SSO_DATA_DIR=ssoData
 SERENGETI_PROP_FILE=${SERENGETI_HOME}/conf/serengeti.properties
-UPDATE_SSO_PROVIDER_SCRIPT=updateSSOAuthProvider.py
-SSO_PROVIDER_FILE=${SERENGETI_HOME}/tomcat6/webapps/serengeti/WEB-INF/spring-security-context.xml
+NEW_SSO_PROVIDER_FILE=spring-security-context.xml
+SSO_PROVIDER_FILE_HOME=${SERENGETI_HOME}/tomcat6/webapps/serengeti/WEB-INF
+SSO_PROVIDER_FILE=${SSO_PROVIDER_FILE_HOME}/spring-security-context.xml
 SSO_TOOL_JAR=`ls ${SSO_TOOL_HOME}/regtool.jar`
 java -jar ${SSO_TOOL_JAR} storeSsoData -d $1 -f ${SSO_TOOL_HOME}/${SSO_DATA_DIR}
 if [ $? != 0 ]
@@ -60,16 +61,7 @@ chmod 400 ${SERENGETI_PROP_FILE}
 
 #replace the existing authentication provider with sso authentication provider
 mv ${SSO_PROVIDER_FILE} ${SSO_PROVIDER_FILE}.bak
-${SSO_TOOL_HOME}/${UPDATE_SSO_PROVIDER_SCRIPT} ${SSO_PROVIDER_FILE}.bak > new_xml
-
-if [ $? != 0 ]
-then
-  echo "There is a problem to update the autehentication provider."
-  mv ${SSO_PROVIDER_FILE}.bak ${SSO_PROVIDER_FILE}
-  exit 1
-else
-  rm -f ${SSO_PROVIDER_FILE}.bak
-  mv new_xml ${SSO_PROVIDER_FILE}
-fi
+cp ${SSO_TOOL_HOME}/${NEW_SSO_PROVIDER_FILE} ${SSO_PROVIDER_FILE}
+chmod 600 ${SSO_PROVIDER_FILE}
 
 echo "SSO Authentication is enabled now. Please restart the Serengeti web server  to complete the procedure by the command 'sudo service tomcat stop/start'."
