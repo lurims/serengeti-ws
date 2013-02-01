@@ -96,13 +96,13 @@ public class SamlAuthenticationFilter extends AbstractAuthenticationProcessingFi
          throws AuthenticationException, ParserConfigurationException,
          SAXException, IOException, ConfigurationException,
          UnmarshallingException, XMLParserException {
-      String samlTokenStr = request.getParameter(samlTokenParameter);
-      if (StringUtils.isEmpty(samlTokenStr)) {
+      String encodeSamlToken = request.getParameter(samlTokenParameter);
+      if (StringUtils.isEmpty(encodeSamlToken)) {
          throw new PreAuthenticatedCredentialsNotFoundException(
                "SAML token cannot be empty!");
       }
-      samlTokenStr = samlTokenStr.trim();
-      Reader reader = new CharArrayReader(samlTokenStr.toCharArray());
+      String samlToken = new String(org.opensaml.xml.util.Base64.decode(encodeSamlToken.trim()));
+      Reader reader = new CharArrayReader(samlToken.toCharArray());
       Document doc = new BasicParserPool().parse(reader);
       Element responseElement = doc.getDocumentElement();
       if (responseElement == null

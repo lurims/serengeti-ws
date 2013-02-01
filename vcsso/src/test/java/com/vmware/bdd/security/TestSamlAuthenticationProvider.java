@@ -1,5 +1,6 @@
 package com.vmware.bdd.security;
 
+<<<<<<< HEAD
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -13,27 +14,37 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+=======
+import java.io.File;
+>>>>>>> Add unit test for SamlAuthenticationProvider.
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;
 import org.easymock.IMocksControl;
+<<<<<<< HEAD
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Response;
 import org.opensaml.xml.signature.Signature;
 import org.opensaml.xml.signature.X509Data;
 import org.springframework.security.authentication.BadCredentialsException;
+=======
+import org.opensaml.saml2.core.Response;
+>>>>>>> Add unit test for SamlAuthenticationProvider.
 import org.springframework.security.core.Authentication;
 import org.testng.annotations.Test;
 
 import com.vmware.bdd.utils.FileUtil;
+<<<<<<< HEAD
 import com.vmware.vim.sso.client.DefaultSecurityTokenServiceFactory;
 import com.vmware.vim.sso.client.DefaultTokenFactory;
 import com.vmware.vim.sso.client.SamlToken;
 import com.vmware.vim.sso.client.SecurityTokenService;
 import com.vmware.vim.sso.client.SecurityTokenServiceConfig;
 import com.vmware.vim.sso.client.SecurityTokenServiceConfig.ConnectionConfig;
+=======
+>>>>>>> Add unit test for SamlAuthenticationProvider.
 
 public class TestSamlAuthenticationProvider  extends EasyMockSupport {
 
@@ -46,9 +57,10 @@ public class TestSamlAuthenticationProvider  extends EasyMockSupport {
       HttpServletRequest request = control.createMock(HttpServletRequest.class);
       File ssoFile = FileUtil.getConfigFile(SSO_XML_FILE, "SSO");
       String samlToken = FileUtil.obtainStringFromFile(ssoFile);
+      String encodeSamlToken = org.opensaml.xml.util.Base64.encodeBytes(samlToken.getBytes());
       EasyMock
             .expect(request.getParameter(SPRING_SECURITY_FROM_SAML_TOKEN_KEY))
-            .andReturn(samlToken);
+            .andReturn(encodeSamlToken);
       control.replay();
       SamlAuthenticationFilter samlAuthenticationFilter = new SamlAuthenticationFilter();
       Response response = samlAuthenticationFilter.obtainSamlToken(request);
@@ -62,6 +74,7 @@ public class TestSamlAuthenticationProvider  extends EasyMockSupport {
       provider.authenticate(authentication);
       control.verify();
    }
+<<<<<<< HEAD
    
    @Test
    public void testSamlTokenVerifyBySSO() throws Exception {
@@ -154,3 +167,6 @@ public class TestSamlAuthenticationProvider  extends EasyMockSupport {
       return null;
    }
 }
+=======
+}
+>>>>>>> Add unit test for SamlAuthenticationProvider.

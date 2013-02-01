@@ -39,9 +39,10 @@ public class TestSamlAuthenticationFilter extends EasyMockSupport {
       HttpServletRequest request = control.createMock(HttpServletRequest.class);
       File ssoFile = FileUtil.getConfigFile(SSO_XML_FILE, "SSO");
       String samlToken = FileUtil.obtainStringFromFile(ssoFile);
+      String encodeSamlToken = org.opensaml.xml.util.Base64.encodeBytes(samlToken.getBytes());
       EasyMock
             .expect(request.getParameter(SPRING_SECURITY_FROM_SAML_TOKEN_KEY))
-            .andReturn(samlToken);
+            .andReturn(encodeSamlToken);
       control.replay();
       SamlAuthenticationFilter samlAuthenticationFilter = new SamlAuthenticationFilter();
       Response response = samlAuthenticationFilter.obtainSamlToken(request);
