@@ -16,12 +16,7 @@ package com.vmware.bdd.security;
 
 import static org.testng.AssertJUnit.assertEquals;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,7 +38,7 @@ public class TestSamlAuthenticationFilter extends EasyMockSupport {
       IMocksControl control = EasyMock.createControl();
       HttpServletRequest request = control.createMock(HttpServletRequest.class);
       File ssoFile = FileUtil.getConfigFile(SSO_XML_FILE, "SSO");
-      String samlToken = obtainStringFromFile(ssoFile);
+      String samlToken = FileUtil.obtainStringFromFile(ssoFile);
       EasyMock
             .expect(request.getParameter(SPRING_SECURITY_FROM_SAML_TOKEN_KEY))
             .andReturn(samlToken);
@@ -53,18 +48,6 @@ public class TestSamlAuthenticationFilter extends EasyMockSupport {
       assertEquals(response.getAssertions().get(0).getSubject().getNameID()
             .getValue(), "lzhai@aurora.dev");
       control.verify();
-   }
-
-   private String obtainStringFromFile(File file) throws IOException {
-      InputStream inputStream = new FileInputStream(file);
-      BufferedReader rufferedReader =
-            new BufferedReader(new InputStreamReader(inputStream));
-      StringBuilder buff = new StringBuilder();
-      String temp = "";
-      while ((temp = rufferedReader.readLine()) != null) {
-         buff.append(temp);
-      }
-      return buff.toString();
    }
 
 }
