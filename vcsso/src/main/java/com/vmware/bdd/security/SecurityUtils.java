@@ -1,5 +1,6 @@
 package com.vmware.bdd.security;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.opensaml.xml.signature.X509Data;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -77,5 +79,32 @@ public class SecurityUtils {
             }
          }
       }
+   }
+
+   public static List<X509Certificate> getCertsFromx509Data(List<X509Data> x509Data) throws CertificateException {
+      List<X509Certificate> certList = new ArrayList<X509Certificate>();
+      if (x509Data != null && !x509Data.isEmpty()) {
+         List<org.opensaml.xml.signature.X509Certificate> certs =
+               x509Data.get(0).getX509Certificates();
+         if (certs != null) {
+            for (org.opensaml.xml.signature.X509Certificate cert : certs) {
+               // Instantiate a java.security.cert.X509Certificate object out of the
+               // base64 decoded byte[] of the certificate
+               X509Certificate x509Cert = null;
+
+               CertificateFactory cf =
+                     CertificateFactory.getInstance("X.509");
+               x509Cert =
+                     (X509Certificate) cf
+                           .generateCertificate(new ByteArrayInputStream(
+                                 org.opensaml.xml.util.Base64.decode(cert
+                                       .getValue())));
+               if (x509Cert != null) {
+                  certList.add(x509Cert);
+               }
+            }
+         }
+      }
+      return certList;
    }
 }

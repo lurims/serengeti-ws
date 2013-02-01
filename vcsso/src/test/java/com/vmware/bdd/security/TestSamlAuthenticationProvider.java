@@ -1,50 +1,37 @@
 package com.vmware.bdd.security;
 
-<<<<<<< HEAD
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
+import static org.testng.AssertJUnit.assertEquals;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-=======
-import java.io.File;
->>>>>>> Add unit test for SamlAuthenticationProvider.
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;
 import org.easymock.IMocksControl;
-<<<<<<< HEAD
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Response;
 import org.opensaml.xml.signature.Signature;
 import org.opensaml.xml.signature.X509Data;
 import org.springframework.security.authentication.BadCredentialsException;
-=======
-import org.opensaml.saml2.core.Response;
->>>>>>> Add unit test for SamlAuthenticationProvider.
 import org.springframework.security.core.Authentication;
 import org.testng.annotations.Test;
 
 import com.vmware.bdd.utils.FileUtil;
-<<<<<<< HEAD
 import com.vmware.vim.sso.client.DefaultSecurityTokenServiceFactory;
 import com.vmware.vim.sso.client.DefaultTokenFactory;
 import com.vmware.vim.sso.client.SamlToken;
 import com.vmware.vim.sso.client.SecurityTokenService;
 import com.vmware.vim.sso.client.SecurityTokenServiceConfig;
 import com.vmware.vim.sso.client.SecurityTokenServiceConfig.ConnectionConfig;
-=======
->>>>>>> Add unit test for SamlAuthenticationProvider.
+
 
 public class TestSamlAuthenticationProvider  extends EasyMockSupport {
 
@@ -74,20 +61,23 @@ public class TestSamlAuthenticationProvider  extends EasyMockSupport {
       provider.authenticate(authentication);
       control.verify();
    }
-<<<<<<< HEAD
    
    @Test
    public void testSamlTokenVerifyBySSO() throws Exception {
       IMocksControl control = EasyMock.createControl();
       HttpServletRequest request = control.createMock(HttpServletRequest.class);
       File ssoFile = FileUtil.getConfigFile(SSO_XML_FILE, "SSO");
-      String samlToken = obtainStringFromFile(ssoFile);
+      String samlToken = FileUtil.obtainStringFromFile(ssoFile);
+      String encodeSamlToken = org.opensaml.xml.util.Base64.encodeBytes(samlToken.getBytes());
       EasyMock
             .expect(request.getParameter(SPRING_SECURITY_FROM_SAML_TOKEN_KEY))
-            .andReturn(samlToken);
+            .andReturn(encodeSamlToken);
       control.replay();
       SamlAuthenticationFilter samlAuthenticationFilter = new SamlAuthenticationFilter();
       Response response = samlAuthenticationFilter.obtainSamlToken(request);
+      assertEquals(response.getAssertions().get(0).getSubject().getNameID()
+            .getValue(), "lzhai@aurora.dev");
+      control.verify();
       
       //test verify saml token by sso
       URL stsURL = new URL("https://10.110.170.6:7444/ims/STSService?wsdl");
@@ -118,46 +108,13 @@ public class TestSamlAuthenticationProvider  extends EasyMockSupport {
       
    }
 
-   private String obtainStringFromFile(File file) throws IOException {
-      InputStream inputStream = new FileInputStream(file);
-      BufferedReader rufferedReader =
-            new BufferedReader(new InputStreamReader(inputStream));
-      StringBuilder buff = new StringBuilder();
-      String temp = "";
-      while ((temp = rufferedReader.readLine()) != null) {
-         buff.append(temp);
-      }
-      return buff.toString();
-   }
-
    private X509Certificate[] getCertsFromAssertion(Assertion assertion)
          throws CertificateException {
       List<X509Certificate> certList = new ArrayList<X509Certificate>();
       Signature ds = assertion.getSignature();
       if (ds != null) {
          List<X509Data> x509Data = ds.getKeyInfo().getX509Datas();
-         if (x509Data != null && !x509Data.isEmpty()) {
-            List<org.opensaml.xml.signature.X509Certificate> certs =
-                  x509Data.get(0).getX509Certificates();
-            if (certs != null) {
-               for (org.opensaml.xml.signature.X509Certificate cert : certs) {
-                  // Instantiate a java.security.cert.X509Certificate object out of the
-                  // base64 decoded byte[] of the certificate
-                  X509Certificate x509Cert = null;
-
-                  CertificateFactory cf =
-                        CertificateFactory.getInstance("X.509");
-                  x509Cert =
-                        (X509Certificate) cf
-                              .generateCertificate(new ByteArrayInputStream(
-                                    org.opensaml.xml.util.Base64.decode(cert
-                                          .getValue())));
-                  if (x509Cert != null) {
-                     certList.add(x509Cert);
-                  }
-               }
-            }
-         }
+         certList = SecurityUtils.getCertsFromx509Data(x509Data);
          if (certList.size() > 0) {
             X509Certificate[] certs =
                   certList.toArray(new X509Certificate[certList.size()]);
@@ -167,6 +124,3 @@ public class TestSamlAuthenticationProvider  extends EasyMockSupport {
       return null;
    }
 }
-=======
-}
->>>>>>> Add unit test for SamlAuthenticationProvider.

@@ -14,16 +14,11 @@
  ***************************************************************************/
 package com.vmware.bdd.security;
 
-import java.io.ByteArrayInputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.security.KeyFactory;
-import java.security.PublicKey;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -113,28 +108,7 @@ public class SamlAuthenticationProvider implements AuthenticationProvider {
       Signature ds = assertion.getSignature();
       if (ds != null) {
          List<X509Data> x509Data = ds.getKeyInfo().getX509Datas();
-         if (x509Data != null && !x509Data.isEmpty()) {
-            List<org.opensaml.xml.signature.X509Certificate> certs =
-                  x509Data.get(0).getX509Certificates();
-            if (certs != null) {
-               for (org.opensaml.xml.signature.X509Certificate cert : certs) {
-                  // Instantiate a java.security.cert.X509Certificate object out of the
-                  // base64 decoded byte[] of the certificate
-                  X509Certificate x509Cert = null;
-
-                  CertificateFactory cf =
-                        CertificateFactory.getInstance("X.509");
-                  x509Cert =
-                        (X509Certificate) cf
-                              .generateCertificate(new ByteArrayInputStream(
-                                    org.opensaml.xml.util.Base64.decode(cert
-                                          .getValue())));
-                  if (x509Cert != null) {
-                     certList.add(x509Cert);
-                  }
-               }
-            }
-         }
+         certList = SecurityUtils.getCertsFromx509Data(x509Data);
          if (certList.size() > 0) {
             X509Certificate[] certs =
                   certList.toArray(new X509Certificate[certList.size()]);
@@ -211,48 +185,30 @@ public class SamlAuthenticationProvider implements AuthenticationProvider {
    private void validateSignature(Response response, Assertion assertion) {
       Signature responseSignature = response.getSignature();
       Subject subject = assertion.getSubject();
-      SubjectConfirmationData subjectConfirmationData = 
-         subject.getSubjectConfirmations().get(0)
+      SubjectConfirmationData subjectConfirmationData =
+            subject.getSubjectConfirmations().get(0)
                   .getSubjectConfirmationData();
       KeyInfoConfirmationDataType keyInfoConfirmationData =
             (KeyInfoConfirmationDataType) subjectConfirmationData;
       //Get the <ds:X509Data/> elements
       KeyInfo keyInfo = (KeyInfo) keyInfoConfirmationData.getKeyInfos().get(0);
       List<X509Data> x509Data = keyInfo.getX509Datas();
-      if (x509Data != null && !x509Data.isEmpty()) {
-         // Pick the first <ds:X509Data/> element
-         X509Data x509Cred = (X509Data) x509Data.get(0);
-         // Get the <ds:X509Certificate/> elements
-         List<org.opensaml.xml.signature.X509Certificate> x509Certs =
-               x509Cred.getX509Certificates();
-         if (x509Certs != null && !x509Certs.isEmpty()) {
-            // Pick the first <ds:X509Certificate/> element
-            org.opensaml.xml.signature.X509Certificate cert = x509Certs.get(0);
-            // Instantiate a java.security.cert.X509Certificate object out of the
-            // base64 decoded byte[] of the certificate
-            java.security.cert.X509Certificate x509Certificate = null;
-            try {
-               CertificateFactory cf = CertificateFactory.getInstance("X.509");
-               x509Certificate =
-                     (X509Certificate) cf
-                           .generateCertificate(new ByteArrayInputStream(
-                                 org.opensaml.xml.util.Base64.decode(cert
-                                       .getValue())));
-               BasicX509Credential publicCredential = new BasicX509Credential();
-               publicCredential.setEntityCertificate(x509Certificate);
+      List<X509Certificate> certList = new ArrayList<X509Certificate>();
+      try {
+         certList = SecurityUtils.getCertsFromx509Data(x509Data);
 
-               SignatureValidator validator =
-                     new SignatureValidator(publicCredential);
-               validator.validate(responseSignature);
-            } catch (Exception e) {
-               String errorMsg =
-                     "SAML token cannot validate the response signatrue: "
-                           + e.getMessage();
-               logger.error(errorMsg);
-               throw new BadCredentialsException(errorMsg);
-            }
-         }
+         BasicX509Credential publicCredential = new BasicX509Credential();
+         publicCredential.setEntityCertificate(certList.get(0));
+
+         SignatureValidator validator =
+               new SignatureValidator(publicCredential);
+         validator.validate(responseSignature);
+      } catch (Exception e) {
+         String errorMsg =
+               "SAML token cannot validate the response signatrue: "
+                     + e.getMessage();
+         logger.error(errorMsg);
+         throw new BadCredentialsException(errorMsg);
       }
    }
-
 }
