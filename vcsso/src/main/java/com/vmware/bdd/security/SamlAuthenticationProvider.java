@@ -66,14 +66,15 @@ public class SamlAuthenticationProvider implements AuthenticationProvider {
          throw new BadCredentialsException(errorMsg);
       }
       Conditions conditions = assertion.getConditions();
+
+//    saml assertion verification by SSO
+    validateTokenFromSSO(response, assertion);
 //      token valid time period
       validateTimePeriod(conditions);
 //      token audience
       validateAudienceURI(conditions);
 //    HOK signature check
       validateSignature(response, assertion);
-//      saml assertion verification by SSO
-      validateTokenFromSSO(response, assertion);
 
       UserDetails user =
             userService.loadUserByUsername(assertion.getSubject().getNameID().getValue());
@@ -87,6 +88,9 @@ public class SamlAuthenticationProvider implements AuthenticationProvider {
          X509Certificate[] certs = getCertsFromAssertion(assertion);
          if (certs != null) {
             String stsLocation = Configuration.getString(STS_PROP_KEY);
+            if (stsLocation == null) {
+               throw new AuthenticationServiceException("SSO is not enabled");
+            }
             SecurityTokenService stsClient =
                   SecurityUtils.getSTSClient(stsLocation);
             SamlToken ssoSamlToken =
@@ -94,7 +98,7 @@ public class SamlAuthenticationProvider implements AuthenticationProvider {
                         certs);
             boolean validFromSSO = stsClient.validateToken(ssoSamlToken);
             if (!validFromSSO) {
-               throw new BadCredentialsException("invalid saml token.");
+               throw new BadCredentialsException("invalid saml token");
             }
          }
       } catch (AuthenticationServiceException serviceException) {
