@@ -68,7 +68,7 @@ public class SamlAuthenticationProvider implements AuthenticationProvider {
       Conditions conditions = assertion.getConditions();
 
 //    saml assertion verification by SSO
-    validateTokenFromSSO(response, assertion);
+      validateTokenFromSSO(response, assertion);
 //      token valid time period
       validateTimePeriod(conditions);
 //      token audience

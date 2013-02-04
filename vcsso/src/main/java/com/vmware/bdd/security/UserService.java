@@ -57,16 +57,18 @@ public class UserService implements UserDetailsService {
             }
          }
          if (!exsiting) {
-            throw new UsernameNotFoundException("User " + username + " is not authorized to access Serengeti.");
+            throw new UsernameNotFoundException("unauthorized user");
          }
 
          ArrayList<GrantedAuthority> roleList = new ArrayList<GrantedAuthority>();
          roleList.add(new SimpleGrantedAuthority(ADMIN_ROLE));
          return new org.springframework.security.core.userdetails.User(
                userDTO.getName(), "", roleList);
+      } catch (UsernameNotFoundException userNotFoundEx) {
+         throw userNotFoundEx;
       } catch (Exception e) {
          logger.error("Authorized error :" + e.getMessage());
-         throw new UsernameNotFoundException("Unauthorized");
+         throw new UsernameNotFoundException("unauthorized");
       }
    }
 
