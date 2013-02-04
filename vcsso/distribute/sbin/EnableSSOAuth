@@ -59,9 +59,4 @@ grep 'sts_crts_dir =' ${SERENGETI_PROP_FILE} > /dev/null
 
 chmod 400 ${SERENGETI_PROP_FILE}
 
-#replace the existing authentication provider with sso authentication provider
-mv ${SSO_PROVIDER_FILE} ${SSO_PROVIDER_FILE}.bak
-cp ${SSO_TOOL_HOME}/${NEW_SSO_PROVIDER_FILE} ${SSO_PROVIDER_FILE}
-chmod 600 ${SSO_PROVIDER_FILE}
-
 echo "SSO Authentication is enabled now. Please restart the Serengeti web server  to complete the procedure by the command 'sudo service tomcat stop/start'."
