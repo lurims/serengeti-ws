@@ -112,5 +112,11 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>vcsso</id>
+            <name>VCSSO</name>
+            <url>http://build-squid.eng.vmware.com/nexus/content/groups/repo/</url>
+            <layout>default</layout>
+        </repository>
 	</repositories>
 </project>
