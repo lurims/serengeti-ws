@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.vmware.bdd</groupId>
   <artifactId>vcsso</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>${serengeti.version}</version>
   <packaging>jar</packaging>
   
   <parent>
