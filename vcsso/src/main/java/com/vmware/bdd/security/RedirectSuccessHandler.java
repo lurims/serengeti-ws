@@ -25,23 +25,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 public class RedirectSuccessHandler implements AuthenticationSuccessHandler {
+
    private static final Logger logger = Logger.getLogger(RedirectSuccessHandler.class);
 
    @Override
    public void onAuthenticationSuccess(HttpServletRequest request,
          HttpServletResponse response, Authentication authentication)
          throws ServletException, IOException {
+
       logger.debug("Redirect request.");
       response.setStatus(HttpServletResponse.SC_OK);
-      String url = "https://" + getServerIp(request) + "/datadirector";
-      response.sendRedirect(url);
-   }
-
-   private String getServerIp(HttpServletRequest request) {
-      String ip = request.getHeader("x-forwarded-for");
-      if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-         ip = request.getRemoteAddr();
-      }
-      return ip;
+      response.sendRedirect("/serengeti");
    }
 }
